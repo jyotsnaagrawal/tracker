@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+
 // Display expenses for the logged-in user
 $sql = "SELECT * FROM expenses WHERE user_id='$user_id'";
 $result = $conn->query($sql);
@@ -51,7 +52,20 @@ if ($result->num_rows > 0) {
 } else {
     echo "<p>No expenses recorded yet.</p>";
 }
+// Display created groups for the logged-in user
+$groupSql = "SELECT * FROM groups WHERE user_id='$user_id'";
+$groupResult = $conn->query($groupSql);
 
+if ($groupResult->num_rows > 0) {
+    echo "<h2>Your Groups</h2>";
+    echo "<ul>";
+    while ($groupRow = $groupResult->fetch_assoc()) {
+        echo "<li>Group: " . $groupRow['group_name'] . "</li>";
+    }
+    echo "</ul>";
+} else {
+    echo "<p>No groups created yet.</p>";
+}
 // Display form to add expense
 ?>
 <!DOCTYPE html>
@@ -64,6 +78,15 @@ if ($result->num_rows > 0) {
 </head>
 <body>
     <h1>Expense Tracker Dashboard</h1>
+    <h2>Create Group</h2>
+    <form action="dashboard.php" method="POST">
+        <label for="group_name">Group Name:</label>
+        <input type="text" name="group_name" required><br>
+
+        <input type="submit" name="create_group" value="Create Group">
+    </form>
+</body>
+</html>
 
     <h2>Add Expense</h2>
     <form action="dashboard.php" method="POST">
@@ -94,15 +117,7 @@ if ($result->num_rows > 0) {
         <input type="submit" name="add_expense" value="Add Expense">
     </form>
 
-    <h2>Create Group</h2>
-    <form action="dashboard.php" method="POST">
-        <label for="group_name">Group Name:</label>
-        <input type="text" name="group_name" required><br>
 
-        <input type="submit" name="create_group" value="Create Group">
-    </form>
-</body>
-</html>
 
 <?php
 $conn->close();
